@@ -10,7 +10,9 @@
 </head>
 
 <body>
+
 		<div class="main-content">
+		<form action="<c:url value='/admin-news'/>" id="formSubmit" method="get">
 			<div class="main-content-inner">
 				<div class="breadcrumbs ace-save-staete" id="breadcrumbs">
 					<ul class="breadcrumb">
@@ -43,25 +45,29 @@
 								<input type="hidden" value="" id="maxPageItem" name="maxPageItem" />
 							</div>
 						</div>
+						</form>
 					</div>
 
 	<script type="text/javascript">
-		var totalPages = $ {
+		var totalPages = ${
 			model.totalPage
 		};
-		var currentPage = $ {
+		var currentPage = ${
 			model.page
 		};
 		var limit = 2;
 		$(function () {
 			window.pagObj = $('#pagination').twbsPagination({
-				totalPages: totalPage,
+				totalPages: totalPages,
 				visiblePages: 10,
 				startPage: currentPage,
 				onPageClick: function (event, page) {
-					$('#maxPageItem').val(limit);
-					$('#page').val(page);
-					$('#formSubmit').submit();
+					if(currentPage != page){
+						$('#maxPageItem').val(limit);
+						$('#page').val(page);
+						$('#formSubmit').submit();
+					}
+					
 				}
 			});
 		});

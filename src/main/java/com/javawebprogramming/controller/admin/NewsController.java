@@ -43,7 +43,8 @@ public class NewsController extends HttpServlet{
 		
 		
 		model.setListResult(newsService.findAll(offset,model.getMaxPageItem()));
-		int totalPage = (int) (Math.ceil((double) model.getListResult().size() / model.getMaxPageItem()));
+		model.setTotalPage(newsService.getTotalItem());
+		int totalPage = (int) (Math.ceil((double) model.getTotalPage() / model.getMaxPageItem()));
 		model.setTotalPage(totalPage);
 		req.setAttribute(SystemConstant.MODEL, model);
 		RequestDispatcher rd = req.getRequestDispatcher("/views/admin/news/list.jsp");
