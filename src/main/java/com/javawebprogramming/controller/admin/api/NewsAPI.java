@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javawebprogramming.model.NewsModel;
+import com.javawebprogramming.model.UserModel;
 import com.javawebprogramming.service.INewsService;
 import com.javawebprogramming.utils.HttpUtil;
+import com.javawebprogramming.utils.SessionUtil;
 
 
 @WebServlet(urlPatterns = {"/api-admin-news"})
@@ -27,10 +29,12 @@ public class NewsAPI extends HttpServlet{
 	private static final long serialVersionUID = -2926325508922667421L;
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		System.out.println("get newsapi request with post");
 		ObjectMapper mapper = new ObjectMapper();
 		req.setCharacterEncoding("UTF-8");
 		res.setContentType("application/json");
 		NewsModel newsModel = HttpUtil.of(req.getReader()).toModel(NewsModel.class);
+		newsModel.setCreatedBy(((UserModel)SessionUtil.getInstance().getValue(req, "USERMODEL")).getUserName());
 		newsModel = newsService.Save(newsModel);
 		mapper.writeValue(res.getOutputStream(), newsModel);
 
@@ -41,6 +45,7 @@ public class NewsAPI extends HttpServlet{
 		req.setCharacterEncoding("UTF-8");
 		res.setContentType("application/json");
 		NewsModel newsModel = HttpUtil.of(req.getReader()).toModel(NewsModel.class);
+		newsModel.setModifiedBy(((UserModel)SessionUtil.getInstance().getValue(req, "USERMODEL")).getUserName());
 		newsModel = newsService.Update(newsModel);
 		mapper.writeValue(res.getOutputStream(), newsModel);
 	}

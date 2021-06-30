@@ -12,7 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.javawebprogramming.constant.SystemConstant;
 import com.javawebprogramming.model.NewsModel;
+import com.javawebprogramming.paging.PageRequest;
+import com.javawebprogramming.service.ICategoryService;
 import com.javawebprogramming.service.INewsService;
+import com.javawebprogramming.sort.Sorter;
+import com.javawebprogramming.utils.FormUtil;
+import com.javawebprogramming.utils.MessageUtil;
 
 @WebServlet(urlPatterns = {"/admin-news"})
 public class NewsController extends HttpServlet{
@@ -23,31 +28,36 @@ public class NewsController extends HttpServlet{
 	
 	@Inject
 	private INewsService newsService;
+	@Inject
+	private ICategoryService categoryService;
+	
 	private static final long serialVersionUID = 1754187861286125337L;
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		NewsModel model = new NewsModel();
-		String pageStr = req.getParameter("page");
-		String maxPageItemStr = req.getParameter("maxPageItem");
-		if(pageStr != null)
+		NewsModel model = new FormUtil().toModel(NewsModel.class, req);
+		String view = "";
+		if(model.getType().equals(SystemConstant.LIST))
 		{
-			model.setPage(Integer.parseInt(pageStr));
-		} else {
-			model.setPage(1);
+			Sorter sorter = new Sorter(model.getSortName(), model.getSortBy());
+			PageRequest pageRequest = new PageRequest(model.getPage(), model.getMaxPageItem(),sorter);
+			model.setListResult(newsService.findAll(pageRequest));
+			model.setTotalPage(newsService.getTotalItem());
+			int totalPage = (int) (Math.ceil((double) model.getTotalPage() / model.getMaxPageItem()));
+			model.setTotalPage(totalPage);
+			view = "/views/admin/news/list.jsp";
+		} else if(model.getType().equals(SystemConstant.EDIT))
+		{
+			if(model.getId() != null)
+			{
+				model = newsService.findOne(model.getId());
+			} else {
+				
+			}
+			req.setAttribute("categories", categoryService.findAll());
+			view ="/views/admin/news/edit.jsp";
 		}
-		
-		if(maxPageItemStr != null)
-		{
-			model.setMaxPageItem(Integer.parseInt(maxPageItemStr));
-		} 
-		int offset = (model.getPage() - 1) * model.getMaxPageItem();
-		
-		
-		model.setListResult(newsService.findAll(offset,model.getMaxPageItem()));
-		model.setTotalPage(newsService.getTotalItem());
-		int totalPage = (int) (Math.ceil((double) model.getTotalPage() / model.getMaxPageItem()));
-		model.setTotalPage(totalPage);
+		MessageUtil.showMessage(req);
 		req.setAttribute(SystemConstant.MODEL, model);
-		RequestDispatcher rd = req.getRequestDispatcher("/views/admin/news/list.jsp");
+		RequestDispatcher rd = req.getRequestDispatcher(view);
 		rd.forward(req, res);
 
 	}

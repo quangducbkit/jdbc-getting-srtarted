@@ -5,6 +5,7 @@ import java.util.List;
 import com.javawebprogramming.dao.INewsDAO;
 import com.javawebprogramming.mapper.NewsMapper;
 import com.javawebprogramming.model.NewsModel;
+import com.javawebprogramming.paging.IPageble;
 
 public class NewsDAO extends AbstractDAO implements INewsDAO {
 
@@ -49,13 +50,21 @@ public class NewsDAO extends AbstractDAO implements INewsDAO {
 		// TODO Auto-generated method stub
 		String sql = "SELECT * FROM news WHERE id=?";
 		List<NewsModel> newsModels = query(sql, new NewsMapper(), id);
-		return newsModels.isEmpty()?null:newsModels.get(0);
+		return newsModels.isEmpty() ? null : newsModels.get(0);
 	}
 
 	@Override
-	public List<NewsModel> findAll(int offset, int limit) {
-		String sql = "SELECT * FROM news LIMIT ?,?";
-		List<NewsModel> newsModels = query(sql, new NewsMapper(),offset,limit);
+	public List<NewsModel> findAll(IPageble pageble) {
+		StringBuilder sql = new StringBuilder("SELECT * FROM news");
+		if (pageble.getSorter() != null && pageble.getSorter().getSortName() != null
+				&& pageble.getSorter().getSortBy() != null) {
+			sql.append(" ORDER BY " + pageble.getSorter().getSortName() + " " + pageble.getSorter().getSortBy());
+		}
+		if (pageble.getOffset() != null && pageble.getLimit() != null) {
+			sql.append(" LIMIT " + pageble.getOffset() + "," + pageble.getLimit());
+		}
+		System.out.println(sql.toString());
+		List<NewsModel> newsModels = query(sql.toString(), new NewsMapper());
 		return newsModels;
 	}
 

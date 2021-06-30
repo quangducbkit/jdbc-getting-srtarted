@@ -22,7 +22,6 @@
 </head>
 <body>
 	<%@include file="/common/web/header.jsp"%>
-
 	<div class="container">
 		<dec:body />
 	</div>

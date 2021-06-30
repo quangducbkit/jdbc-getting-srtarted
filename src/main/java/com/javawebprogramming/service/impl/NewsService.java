@@ -12,6 +12,7 @@ import com.javawebprogramming.dao.ICommentDAO;
 import com.javawebprogramming.dao.INewsDAO;
 import com.javawebprogramming.model.CategoryModel;
 import com.javawebprogramming.model.NewsModel;
+import com.javawebprogramming.paging.IPageble;
 import com.javawebprogramming.service.INewsService;
 
 public class NewsService implements INewsService{
@@ -33,7 +34,6 @@ public class NewsService implements INewsService{
 
 	@Override
 	public NewsModel Save(NewsModel newsModel) {
-		// TODO Auto-generated method stub
 		newsModel.setCreatedDate(new Timestamp(System.currentTimeMillis()));
 		CategoryModel categoryModel = categoryDao.findOneByCode(newsModel.getCategoryCode());
 		newsModel.setCategoryId(categoryModel.getId());
@@ -66,7 +66,6 @@ public class NewsService implements INewsService{
 
 	@Override
 	public NewsModel findOne(Long id) {
-		// TODO Auto-generated method stub
 		NewsModel newsModel = newsDao.findOne(id);
 		System.out.println(newsModel.getCategoryId());
 		System.out.println(newsModel.getCategoryId());
@@ -76,8 +75,8 @@ public class NewsService implements INewsService{
 	}
 
 	@Override
-	public List<NewsModel> findAll(int offset, int limit) {
-		return newsDao.findAll(offset,limit);
+	public List<NewsModel> findAll(IPageble pageble) {
+		return newsDao.findAll(pageble);
 		
 	}
 

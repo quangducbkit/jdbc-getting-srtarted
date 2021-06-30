@@ -9,8 +9,6 @@ public class NewsMapper implements Mapper<NewsModel> {
 
 	@Override
 	public NewsModel rowMapper(ResultSet resultSet) {
-		// TODO Auto-generated method stub
-
 		try {
 			NewsModel newsModel = new NewsModel();
 			newsModel.setId(resultSet.getLong("id"));
